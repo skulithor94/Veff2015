@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NewsApp.DAL;
+using NewsApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,23 +10,30 @@ namespace NewsApp.Controllers
 {
     public class HomeController : Controller
     {
+        NewsRepository repo = new NewsRepository();
+
         public ActionResult Index()
         {
-            return View();
+            var news = repo.GetAllNews();
+            return View(news);
         }
 
-        public ActionResult About()
+        public ActionResult Create()
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
+            return View(new NewsItem());
         }
 
-        public ActionResult Contact()
+        [HttpPost]
+        public ActionResult Create(FormCollection form)
         {
-            ViewBag.Message = "Your contact page.";
+            NewsItem news = new NewsItem();
+            UpdateModel(news);
+            NewsContext context = new NewsContext();
 
-            return View();
+            context.News.Add(news);
+            context.SaveChanges();
+            return RedirectToAction("Index");
         }
+
     }
 }
